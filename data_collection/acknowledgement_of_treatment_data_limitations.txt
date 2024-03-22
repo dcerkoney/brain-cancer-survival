@@ -1,0 +1,62 @@
+SEER Acknowledgment of Treatment Data Limitations
+
+For the 1975-2020 Data (November 2022 Submission)
+
+Surveillance, Epidemiology, and End Results (SEER) releases information on radiation therapy (RT) and chemotherapy given as part of the first course of treatment. RT data are classified by the type of RT received or “no/unknown – no evidence of radiation was found in the medical records examined”. Chemotherapy data are categorized as either “yes – patient had chemotherapy” or “no/unknown – no evidence of chemotherapy was found in the medical records examined”.  SEER registries also collect information on when treatment started. The months from diagnosis to treatment is calculated using the month and year treatment started and the month and year of diagnosis. Treatment could include surgery, radiation therapy, chemotherapy, hormone, immunotherapy, and/or active surveillance.
+
+Specifically, the months from diagnosis to treatment is calculated as:
+
+Months from diagnosis to treatment = ((Year initial treatment started * 12) + Month initial treatment started) - ((Year of diagnosis * 12) + Month of diagnosis)
+These data are available after acknowledging the limitations associated with analyses of the data. Three main limitations affect recommended analyses using the SEER radiation treatment and chemotherapy data:  1) the completeness of the variables; and 2) the biases associated with unmeasured reasons for receiving or not receiving RT/chemotherapy; 3) the interpretation of sequence data variables. The limitations of using the months from diagnosis to treatment variable are related to: 1) completeness of the variable; and 2) precision of the variable.
+
+Below we further describe the issues and analyses that could be problematic.
+
+Completeness of the Variables
+One publication comparing SEER data with SEER-Medicare data reported that overall sensitivity was 80% for SEER RT data and 68% for SEER chemotherapy data. Sensitivity varied by cancer site, stage, and patient characteristics. The overall positive predictive value was high (>85%) for all treatments and cancer sites except chemotherapy for prostate cancer. This analysis used a fairly broad definition for chemotherapy use based on Medicare claims.1
+
+Although sensitivity was moderate, specificity was high, meaning that if RT or chemotherapy was captured in SEER, it was most likely received by the patient. But if treatment was not captured in SEER, then we do not know whether it was not received by the patient or whether it was missed by the registry. Because we cannot accurately distinguish between “no treatment” and “unknown if patients received treatment,” the variables that are released upon request are classified as “yes” or “no/unknown”. 
+
+Examples of analyses that would NOT be supported by the RT/chemotherapy data, due to the incompleteness of the variable, include:
+
+Estimates of population prevalence of treatment or patterns of care in the population without appropriate comment on the limitations of the data (e.g., clearly labeling both treatment categories as "yes" and "no/unknown" wherever they appear)
+Estimates of compliance with guidelines
+Comparison of treatment levels in different groups, e.g., investigating health disparities, without adequately stated limitations
+Comparison of outcomes by treatment received
+Since positive predicted value is high for RT/chemotherapy (i.e., high confidence that a patient received the treatment when reported as “yes”), analyses such as identifying a cohort of patients who received treatment in order to identify risk of adverse events, including risk of second cancers, would be supported by the data.
+
+Certain types of treatment data (i.e., chemotherapy, hormonotherapy, radiation therapy) are less complete. If the treatment information is missing, the date of treatment is most likely missing as well.
+
+Example of analysis that would NOT be supported because of potential bias is an analysis that associates the time from diagnosis to treatment with the type of treatment. For example, if a patient has only surgery collected in SEER data with chemotherapy and radiation therapy unknown, it is possible that chemotherapy has been given pre- (neoadjuvant) or post-surgery (adjuvant), and the time to treatment could be the time to neoadjuvant treatment (chemotherapy), not the time to curative intent treatment (surgery).
+
+The analysis of overall impact on the first course of treatment is possible.
+
+Biases Associated with Who Receives Treatment
+Unlike clinical trials, many factors involved in determining the course of treatment are not captured in the registry data. Such factors include:  patient preferences, physician recommendations, comorbidities, and proximity to treatment providers. We do not recommend comparing outcomes conditioned on treatment or comparative effectiveness research using the SEER data without careful consideration of possible biases and appropriate adjustments.  For example, survival differences observed for patients who did vs. did not receive chemotherapy cannot be attributed to the efficacy or effectiveness of treatment without controlling for the factors that determined treatment receipt. Similarly, observed differences cannot be generalized to describe the benefit an individual would expect to receive from chemotherapy treatment.
+
+Sequence Treatment Variables
+
+The SEER databases include two variables indicating the sequence of systemic therapy and radiation therapy with respect to surgery, “RX SUMM--SYSTEMIC/SUR SEQ” and “RX SUMM--SURG/RAD SEQ”. We recommend caution when using these variables to identify patients that could have received neoadjuvant treatment because:
+
+Surgery in the context of this data item may refer to any surgical procedure recorded in any surgery-related data items, such as an excisional biopsy of the primary tumor, a removal of a distant metastatic lymph node, etc. 
+Although the variables report the sequence of surgery and other treatment modalities, it does not consider the timing of events. Thus, it is possible that radiation may have been given more than 6 months, or just 6 days prior to surgery and not constitute neoadjuvant.
+The systemic treatment administered before surgery might not have had neo-adjuvant intent or would not have been administered long enough to expect a relevant tumor response (i.e., endocrine therapy administered days before mastectomy).
+There may be missing information about radiation and/or systemic treatment, which may underestimate the frequency of neoadjuvant treatment.
+Surgery does not refer to most definitive surgery. For example, it might refer to the removal of regional or distant lymph nodes.
+Because of the limitations listed above, we strongly caution investigators to consider the potential for misclassification bias when using the sequence treatment variables to select cases that might have received radiation therapy or systemic treatment with neoadjuvant intent.
+
+Precision and interpretation of months from diagnosis to treatment
+Since the day element of dates are not available, this calculation of months from diagnosis to treatment is not exact. If months > 24 or a component of the date is unknown, a value of blank is assigned. The time is capped at 24 months after diagnosis because after 24 months, this would not typically be the first course of treatment.
+
+SEER treatment data is currently limited to the first course treatment modalities, and the time from diagnose to treatment is the time to the first course treatment, which could be chemotherapy, hormonotherapy, immunotherapy, radiation therapy, surgery, or decision to initiate active surveillance. In some situations, the date represents the time that there was a decision not to treat (for example the time that active follow up was started for prostate cancer).
+
+Definitions
+
+Neoadjuvant: Systemic therapy provided prior to a curative surgery with an intention of producing an outcome of reduction in tumor size prior to surgery.
+
+Intraoperative radiation therapy (IORT): An intensive radiation treatment that is administered during surgery. IORT allows direct radiation to the target area while sparing normal surrounding tissue. IORT is used to treat cancers that are difficult to remove during surgery and when there is a concern that microscopic amounts of cancer may remain. IORT is often combined with conventional radiation therapy, which is usually administered before surgery. IORT allows higher effective doses of radiation to be used compared with conventional radiation therapy, as it allows doctors to temporarily move nearby organs or shield them from radiation exposure.
+
+Reference:
+
+Noone AM, Lund JL, Mariotto A, Cronin K, McNeel T, Deapen D, Warren JL. Comparison of SEER Treatment Data With Medicare Claims. Med Care. 2016 Sep;54(9):e55-64. PMID: 24638121.
+
+I have read and understand the limitations of the treatment data described above and will include a description of relevant limitations in any analyses published using the SEER data. I acknowledge that the SEER Program has advised me that there are substantive concerns about using these data to address certain research questions as described above. I understand that any findings from such analyses may be inaccurate or misleading.
