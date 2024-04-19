@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import numpy as np
 import pandas as pd
 
@@ -19,6 +21,8 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
           .pipe(clean_year_of_death_recode)
           .pipe(clean_age_recode_with_lt1_year_olds)
           .pipe(clean_median_household_income)
+          .pipe(select_survival_months_flag)
+          .pipe(convert_columns_to_categorical)
     )
 
 def replace_empty_values(df: pd.DataFrame) -> pd.DataFrame:
@@ -108,3 +112,72 @@ def clean_median_household_income(df: pd.DataFrame) -> pd.DataFrame:
     )
     df = df.drop(columns='Median household income inflation adj to 2021')
     return df
+
+def select_survival_months_flag(df: pd.DataFrame) -> pd.DataFrame:
+    '''
+    Selects patients with complete date information available in the SEER*Stat
+    database and non-zero days of survival based on the "Survival months flag" 
+    variable.
+
+    Parameters:
+        df (pd.DataFrame): Input DataFrame.
+
+    Returns:
+        pd.DataFrame: Transformed DataFrame.
+    '''
+    val = 'Complete dates are available and there are more than 0 days of survival'
+    return df[(df['Survival months flag'] == val)]
+
+def convert_columns_to_categorical(df: pd.DataFrame) -> pd.DataFrame:
+    '''
+    Converts columns containing categorical data to actually have categorical
+    dtypes in the DataFrame. 
+    
+    Note: The list of categorical columns used in this function is not 
+    necessarily complete.
+
+    Parameters:
+        df (pd.DataFrame): Input DataFrame.
+
+    Returns:
+        pd.DataFrame: DataFrame with dtypes changed.
+    '''
+    categorical_columns = [
+        'Sex',
+        'Race recode (W, B, AI, API)', 
+        'Origin recode NHIA (Hispanic, Non-Hisp)', 
+        'Race and origin recode (NHW, NHB, NHAIAN, NHAPI, Hispanic)', 
+        'Vital status recode (study cutoff used)', 
+        'SEER cause-specific death classification', 
+        'SEER other cause of death classification', 
+        'Type of Reporting Source', 
+        'Marital status at diagnosis', 
+        'Rural-Urban Continuum Code', 
+        'End Calc Vital Status (Adjusted)', 
+        'Survival months flag'
+    ]
+    return df.astype({col: 'category' for col in categorical_columns})
+
+def split_X_and_y_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    '''
+    Splits the data into independent and dependent variables in the format 
+    needed for model training.
+
+    Parameters:
+        df (pd.DataFrame): Input DataFrame.
+
+    Returns:
+        Tuple[pd.DataFrame, pd.DataFrame]: A tuple containting two DataFrame's, 
+            one with the X variables and one with the y variables.
+    '''
+    X = df.drop(
+        ['Vital status recode (study cutoff used)', 'Survival months'],
+        axis='columns'
+    )
+    y = pd.DataFrame({
+        'Event indicator': 
+            (df['Vital status recode (study cutoff used)'] == 'Dead'),
+        'Survival months': 
+            df['Survival months']
+    })
+    return (X, y)
