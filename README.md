@@ -1,6 +1,6 @@
 ## Team members
 
-Adekunle Akinmola, Varun Gudibanda, Trajan Hammonds, Haridas Kumar Das, Anthony Young, and Daniel Cerkoney
+Adekunle Akinmola, Anthony Young, Daniel Cerkoney, and Varun Gudibanda
 
 ## Goal
 
