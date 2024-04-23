@@ -111,7 +111,9 @@ def clean_median_household_income(df: pd.DataFrame) -> pd.DataFrame:
         .astype('Int64')
     )
     df = df.drop(columns='Median household income inflation adj to 2021')
-    return df
+    mask_nan = df['Median household income inflation adj to 2021 (thousands USD)'].notna(
+    )
+    return df[mask_nan]
 
 def select_survival_months_flag(df: pd.DataFrame) -> pd.DataFrame:
     '''
