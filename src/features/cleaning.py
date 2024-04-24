@@ -24,6 +24,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
           .pipe(clean_median_household_income)
           .pipe(select_survival_months_flag)
           .pipe(convert_columns_to_categorical)
+          .pipe(convert_integer_columns)
           .pipe(clean_tumor_size_codes)
     )
 
@@ -167,6 +168,24 @@ def convert_columns_to_categorical(df: pd.DataFrame) -> pd.DataFrame:
         'SEER Combined Summary Stage 2000 (2004-2017)'
     ]
     return df.astype({col: 'category' for col in categorical_columns})
+
+def convert_integer_columns(df: pd.DataFrame) -> pd.DataFrame:
+    '''
+    Converts columns containing strings for numerical integer data to actually 
+    use Int64 dtypes.
+    
+    Note: The list of columns used in this function is not necessarily complete.
+
+    Parameters:
+        df (pd.DataFrame): Input DataFrame.
+
+    Returns:
+        pd.DataFrame: DataFrame with dtypes changed.
+    '''
+    integer_columns = [
+        'Months from diagnosis to treatment'
+    ]
+    return df.astype({col: 'Int64' for col in integer_columns})
 
 def split_X_and_y_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     '''
