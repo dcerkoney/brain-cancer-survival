@@ -23,6 +23,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
           .pipe(clean_median_household_income)
           .pipe(select_survival_months_flag)
           .pipe(convert_columns_to_categorical)
+          .pipe(clean_tumor_size_codes)
     )
 
 def replace_empty_values(df: pd.DataFrame) -> pd.DataFrame:
@@ -183,3 +184,75 @@ def split_X_and_y_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
             df['Survival months']
     })
     return (X, y)
+
+def convert_NaN_to_missing(df: pd.DataFrame, columns):
+    '''
+    Coverts NaN values to "MISSING" for a set of columns.
+    '''
+    ...
+    
+def clean_tumor_size_codes(df: pd.DataFrame) -> pd.DataFrame:
+    '''
+    Cleans the tumor size code features covering different time periods 
+    ("EOD 10 - size (1988-2003)", "CS tumor size (2004-2015)", "Tumor Size 
+    Summary (2016+)") in to following ways:
+      1. Drops the codes for non-exact size measurements and other special 
+         codes. It looks like there are only a few of these (~10's) for each of 
+         these codes.
+      2. Combines the listed exact size measurements from across time periods 
+         into a single feature.
+      3. Creates another feature to track no tumor found.
+      4. Creates another feature to track missing values.
+
+    Parameters:
+        df (pd.DataFrame): Input DataFrame.
+
+    Returns:
+        pd.DataFrame: Transformed DataFrame.
+    '''
+    def drop_tumor_size_codes(df, column, threshold_code):
+        '''
+        Drops samples with tumor size codes above a threshold except for values
+        of 999.
+        '''
+        mask = np.logical_and(
+            df[column] > threshold_code,
+            df[column] != 999
+        )
+        return df.drop(df[mask].index)
+    
+    df['EOD 10 - size (1988-2003)'] = df['EOD 10 - size (1988-2003)'].astype('Int64')
+    df['CS tumor size (2004-2015)'] = df['CS tumor size (2004-2015)'].astype('Int64')
+    df['Tumor Size Summary (2016+)']    = df['Tumor Size Summary (2016+)'].astype('Int64')
+    
+    # Drop rows with the uncommon code
+    df = drop_tumor_size_codes(df, 'EOD 10 - size (1988-2003)', 996)
+    df = drop_tumor_size_codes(df, 'CS tumor size (2004-2015)', 989)
+    df = drop_tumor_size_codes(df, 'Tumor Size Summary (2016+)', 989)
+        
+    sizes_88_03 = df['EOD 10 - size (1988-2003)'].astype('Int64')
+    sizes_04_15 = df['CS tumor size (2004-2015)'].astype('Int64')
+    sizes_16    = df['Tumor Size Summary (2016+)'].astype('Int64')
+    
+    # Create new features for combined tumor size, no tumor found, and missing
+    # values
+    simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
+    df['Combined Tumor Size'] = (
+        sizes_88_03
+        .combine_first(sizes_04_15)
+        .combine_first(sizes_16)
+    )
+    df['Combined Tumor Size'] = df['Combined Tumor Size'].replace(999, 0)
+    df['No tumor found'] = np.logical_or.reduce((
+        (sizes_88_03 == 000).fillna(False), 
+        (sizes_04_15 == 000).fillna(False), 
+        (sizes_16 == 000).fillna(False))
+    )
+    df['Unknown tumor size'] = np.logical_or.reduce((
+        (sizes_88_03 == 999).fillna(False), 
+        (sizes_04_15 == 999).fillna(False), 
+        (sizes_16 == 999).fillna(False))
+    )
+    simplefilter(action='default', category=pd.errors.PerformanceWarning)
+    
+    return df
