@@ -158,7 +158,13 @@ def convert_columns_to_categorical(df: pd.DataFrame) -> pd.DataFrame:
         'Marital status at diagnosis', 
         'Rural-Urban Continuum Code', 
         'End Calc Vital Status (Adjusted)', 
-        'Survival months flag'
+        'Survival months flag',
+        'AYA site recode 2020 Revision',
+        'SEER Brain and CNS Recode',
+        'Grade Recode (thru 2017)',
+        'Diagnostic Confirmation',
+        'Histology recode - broad groupings',
+        'SEER Combined Summary Stage 2000 (2004-2017)'
     ]
     return df.astype({col: 'category' for col in categorical_columns})
 
