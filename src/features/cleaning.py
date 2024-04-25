@@ -20,7 +20,8 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
         df.pipe(replace_empty_values)
           .pipe(remove_empty_columns)
           .pipe(clean_year_of_death_recode)
-          .pipe(clean_age_recode_with_lt1_year_olds)
+        #   .pipe(clean_age_recode_with_lt1_year_olds)
+          .pipe(clean_age_by_standard_for_survival)
           .pipe(clean_median_household_income)
           .pipe(select_survival_months_flag)
           .pipe(convert_columns_to_categorical)
@@ -91,6 +92,31 @@ def clean_age_recode_with_lt1_year_olds(df: pd.DataFrame) -> pd.DataFrame:
         .str.slice(0, 2)
         .astype(int)
     )
+    return df
+
+def clean_age_by_standard_for_survival(df: pd.DataFrame) -> pd.DataFrame:
+    '''
+    Groups age range according to the age standard for survival type II.
+
+    Parameters:
+        df (pd.DataFrame): Input DataFrame.
+
+    Returns:
+        pd.DataFrame: Transformed DataFrame.
+    '''
+    df['Age standard for survival'] = (
+        df['Age recode with <1 year olds']
+        .str.slice(0, 2)
+        .astype(int)
+        .replace({
+            (15, 20, 25, 30, 35, 40): 15,
+            (45, 50): 45,
+            (55, 60): 55,
+            (65, 70): 65,
+            (75, 80, 85): 75,
+        })
+    )
+    df = df.drop(columns='Age recode with <1 year olds')
     return df
 
 def clean_median_household_income(df: pd.DataFrame) -> pd.DataFrame:
