@@ -104,6 +104,7 @@ def build_1d_gridsearch(
 
 
 def run_2d_gridsearch(
+    estimator: BaseEstimator,
     X_transformed: np.ndarray,
     y_train: pd.Series,
     l1_ratios: np.ndarray,
@@ -123,8 +124,8 @@ def run_2d_gridsearch(
 
     Parameters
     ----------
-    pipeline : sklearn.pipeline.Pipeline
-        The pipeline object containing the Coxnet model.
+    estimator : sklearn.base.BaseEstimator
+        The Coxnet model to optimize.
     X_transformed : np.ndarray
         The transformed feature matrix.
     y_train : pd.Series
@@ -164,12 +165,7 @@ def run_2d_gridsearch(
     cv = KFold(n_splits=n_splits, shuffle=True, random_state=2984)
 
     # Build the grid search metaestimator and fit it
-    coxnet = CoxnetSurvivalAnalysis(
-        verbose=True,
-        fit_baseline_model=False,
-        max_iter=max_iter,
-    )
-    cv_search = build_2d_gridsearch(coxnet, cv, l1_ratios, alphas, n_jobs, verbose)
+    cv_search = build_2d_gridsearch(estimator, cv, l1_ratios, alphas, n_jobs, verbose)
     cv_search.fit(X_transformed, y_train.to_records(index=False))
 
     # Get a results summary and best parameters from the grid search
@@ -185,6 +181,7 @@ def run_2d_gridsearch(
 
 
 def run_1d_gridsearch(
+    estimator: BaseEstimator,
     X_transformed: np.ndarray,
     y_train: pd.Series,
     l1_ratio: float,
@@ -204,8 +201,8 @@ def run_1d_gridsearch(
 
     Parameters
     ----------
-    pipeline : sklearn.pipeline.Pipeline
-        The pipeline object containing the Coxnet model.
+    estimator : sklearn.base.BaseEstimator
+        The Coxnet model to optimize.
     X_transformed : np.ndarray
         The transformed feature matrix.
     y_train : pd.Series
@@ -245,13 +242,7 @@ def run_1d_gridsearch(
     cv = KFold(n_splits=n_splits, shuffle=True, random_state=2984)
 
     # Build the grid search metaestimator and fit it
-    coxnet = CoxnetSurvivalAnalysis(
-        l1_ratio=l1_ratio,
-        verbose=True,
-        fit_baseline_model=False,
-        max_iter=max_iter,
-    )
-    cv_search = build_1d_gridsearch(coxnet, cv, alphas, n_jobs, verbose)
+    cv_search = build_1d_gridsearch(estimator, cv, alphas, n_jobs, verbose)
     cv_search.fit(X_transformed, y_train.to_records(index=False))
 
     # Get a results summary and best parameters from the grid search
