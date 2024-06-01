@@ -19,6 +19,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     return (
         df.pipe(replace_empty_values)
         .pipe(remove_empty_columns)
+        .pipe(remove_multiple_tumors)
         .pipe(clean_year_of_death_recode)
         .pipe(clean_age_recode_with_lt1_year_olds)
         # .pipe(clean_age_by_standard_for_survival)
@@ -59,6 +60,23 @@ def remove_empty_columns(df: pd.DataFrame) -> pd.DataFrame:
     """
     df = df.dropna(axis="columns", how="all")
     return df[[c for c in list(df) if len(df[c].unique()) > 1]]
+
+
+def remove_multiple_tumors(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Drops patients with multiple tumors from the dataset.
+
+    Parameters:
+        df (pd.DataFrame): Input DataFrame.
+
+    Returns:
+        pd.DataFrame: Transformed DataFrame.
+    """
+    has_single_tumor = df["Total number of in situ/malignant tumors for patient"] == 1
+    df = df[has_single_tumor].drop(
+        columns="Total number of in situ/malignant tumors for patient"
+    )
+    return df
 
 
 def clean_year_of_death_recode(df: pd.DataFrame) -> pd.DataFrame:
@@ -261,7 +279,7 @@ def clean_tumor_size_codes(df: pd.DataFrame) -> pd.DataFrame:
     """
     Cleans the tumor size code features covering different time periods
     ("EOD 10 - size (1988-2003)", "CS tumor size (2004-2015)", "Tumor Size
-    Summary (2016+)") in to following ways:
+    Summary (2016+)") in the following ways:
       1. Drops the codes for non-exact size measurements and other special
          codes. It looks like there are only a few of these (~10's) for each of
          these codes.
