@@ -5,30 +5,46 @@ import numpy as np
 import pandas as pd
 
 
-def clean_data(df: pd.DataFrame) -> pd.DataFrame:
+def clean_data(df: pd.DataFrame, stratify_age=False) -> pd.DataFrame:
     """
     Performs basic cleaning of the data. More advanced cleaning and feature
     selection steps are performed with scikit-learn.
 
     Parameters:
         df (pd.DataFrame): Raw DataFrame containing the data.
+        stratify_age (bool): If True, the age feature will be binned for
+        stratification according to the age standard for survival type II.
 
     Returns:
         pd.DataFrame: The resulting cleaned DataFrame.
     """
-    return (
-        df.pipe(replace_empty_values)
-        .pipe(remove_empty_columns)
-        .pipe(remove_multiple_tumors)
-        .pipe(clean_year_of_death_recode)
-        .pipe(clean_age_recode_with_lt1_year_olds)
-        # .pipe(clean_age_by_standard_for_survival)
-        .pipe(clean_median_household_income)
-        .pipe(select_survival_months_flag)
-        .pipe(convert_columns_to_categorical)
-        .pipe(convert_integer_columns)
-        .pipe(clean_tumor_size_codes)
-    )
+    # NOTE: We hard-code the pipeline branches to avoid dataframe fragmentation
+    if stratify_age:
+        return (
+            df.pipe(replace_empty_values)
+            .pipe(remove_empty_columns)
+            .pipe(remove_multiple_tumors)
+            .pipe(clean_year_of_death_recode)
+            .pipe(clean_age_by_standard_for_survival)
+            .pipe(clean_median_household_income)
+            .pipe(select_survival_months_flag)
+            .pipe(convert_columns_to_categorical)
+            .pipe(convert_integer_columns)
+            .pipe(clean_tumor_size_codes)
+        )
+    else:
+        return (
+            df.pipe(replace_empty_values)
+            .pipe(remove_empty_columns)
+            .pipe(remove_multiple_tumors)
+            .pipe(clean_year_of_death_recode)
+            .pipe(clean_age_recode_with_lt1_year_olds)
+            .pipe(clean_median_household_income)
+            .pipe(select_survival_months_flag)
+            .pipe(convert_columns_to_categorical)
+            .pipe(convert_integer_columns)
+            .pipe(clean_tumor_size_codes)
+        )
 
 
 def replace_empty_values(df: pd.DataFrame) -> pd.DataFrame:
