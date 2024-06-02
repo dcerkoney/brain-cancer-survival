@@ -1,12 +1,13 @@
 import os
 import pickle
 
+from lifelines import CoxPHFitter
+
 from src.utils import get_project_root
-from sklearn.base import BaseEstimator
 
 
 def save_model(
-    estimator: BaseEstimator,
+    fitter: CoxPHFitter,
     filename="model.pkl",
     overwrite=False,
 ) -> None:
@@ -15,7 +16,7 @@ def save_model(
 
     Parameters
     ----------
-    estimator : sklearn.base.BaseEstimator
+    fitter : lifelines.CoxPHFitter
         The model to save.
     filename : str, optional
         The filename to save the model to. Default is 'model.pkl'.
@@ -32,12 +33,12 @@ def save_model(
             f"File {filepath} already exists! Set overwrite=True to overwrite."
         )
     with open(filepath, "wb") as f:
-        pickle.dump(estimator, f)
+        pickle.dump(fitter, f)
 
 
 def load_model(
     filename="model.pkl",
-) -> BaseEstimator:
+) -> CoxPHFitter:
     """
     De-serialize a model from a file using pickle.
 
@@ -54,6 +55,6 @@ def load_model(
     filepath = os.path.join(get_project_root(), "models", filename)
     with open(filepath, "rb") as f:
         model = pickle.load(f)
-        if not isinstance(model, BaseEstimator):
-            raise ValueError("Invalid model: not a sklearn.base.BaseEstimator!")
+        if not isinstance(model, CoxPHFitter):
+            raise ValueError("Invalid model: not a lifelines.CoxPHFitter!")
         return model

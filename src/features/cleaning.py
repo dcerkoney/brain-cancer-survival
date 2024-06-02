@@ -5,29 +5,46 @@ import numpy as np
 import pandas as pd
 
 
-def clean_data(df: pd.DataFrame) -> pd.DataFrame:
+def clean_data(df: pd.DataFrame, stratify_age=False) -> pd.DataFrame:
     """
     Performs basic cleaning of the data. More advanced cleaning and feature
     selection steps are performed with scikit-learn.
 
     Parameters:
         df (pd.DataFrame): Raw DataFrame containing the data.
+        stratify_age (bool): If True, the age feature will be binned for
+        stratification according to the age standard for survival type II.
 
     Returns:
         pd.DataFrame: The resulting cleaned DataFrame.
     """
-    return (
-        df.pipe(replace_empty_values)
-        .pipe(remove_empty_columns)
-        .pipe(clean_year_of_death_recode)
-        #   .pipe(clean_age_recode_with_lt1_year_olds)
-        .pipe(clean_age_by_standard_for_survival)
-        .pipe(clean_median_household_income)
-        .pipe(select_survival_months_flag)
-        .pipe(convert_columns_to_categorical)
-        .pipe(convert_integer_columns)
-        .pipe(clean_tumor_size_codes)
-    )
+    # NOTE: We hard-code the pipeline branches to avoid dataframe fragmentation
+    if stratify_age:
+        return (
+            df.pipe(replace_empty_values)
+            .pipe(remove_empty_columns)
+            .pipe(remove_multiple_tumors)
+            .pipe(clean_year_of_death_recode)
+            .pipe(clean_age_by_standard_for_survival)
+            .pipe(clean_median_household_income)
+            .pipe(select_survival_months_flag)
+            .pipe(convert_columns_to_categorical)
+            .pipe(convert_integer_columns)
+            .pipe(clean_tumor_size_codes)
+        )
+    else:
+        return (
+            df.pipe(replace_empty_values)
+            .pipe(remove_empty_columns)
+            .pipe(remove_multiple_tumors)
+            .pipe(clean_year_of_death_recode)
+            .pipe(clean_age_recode_with_lt1_year_olds)
+            .pipe(clean_median_household_income)
+            .pipe(select_survival_months_flag)
+            .pipe(convert_columns_to_categorical)
+            .pipe(convert_integer_columns)
+            .pipe(clean_tumor_size_codes)
+        )
 
 
 def replace_empty_values(df: pd.DataFrame) -> pd.DataFrame:
@@ -59,6 +76,23 @@ def remove_empty_columns(df: pd.DataFrame) -> pd.DataFrame:
     """
     df = df.dropna(axis="columns", how="all")
     return df[[c for c in list(df) if len(df[c].unique()) > 1]]
+
+
+def remove_multiple_tumors(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Drops patients with multiple tumors from the dataset.
+
+    Parameters:
+        df (pd.DataFrame): Input DataFrame.
+
+    Returns:
+        pd.DataFrame: Transformed DataFrame.
+    """
+    has_single_tumor = df["Total number of in situ/malignant tumors for patient"] == 1
+    df = df[has_single_tumor].drop(
+        columns="Total number of in situ/malignant tumors for patient"
+    )
+    return df
 
 
 def clean_year_of_death_recode(df: pd.DataFrame) -> pd.DataFrame:
@@ -261,7 +295,7 @@ def clean_tumor_size_codes(df: pd.DataFrame) -> pd.DataFrame:
     """
     Cleans the tumor size code features covering different time periods
     ("EOD 10 - size (1988-2003)", "CS tumor size (2004-2015)", "Tumor Size
-    Summary (2016+)") in to following ways:
+    Summary (2016+)") in the following ways:
       1. Drops the codes for non-exact size measurements and other special
          codes. It looks like there are only a few of these (~10's) for each of
          these codes.
