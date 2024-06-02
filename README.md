@@ -1,18 +1,19 @@
 ## Team members
 
-Adekunle Akinmola, Anthony Young, Daniel Cerkoney, and Varun Gudibanda
+Daniel Cerkoney and Anthony Young
 
-## Goal
+## Background and Objectives
 
-Analyze the data of cancer survivors and treatments in the United States to assist in making decisions related to research and drug development by pharmaceutical companies.
-Analyzing this information can guide healthcare providers (oncologists) in deciding on treatment to administer to patients.
-It may also help patients have access to the types of treatment that worked for survivors with similar characteristics.
-Predictors may include cancer types and stages, age, gender, race, ethnic group, lifestyle, and background.
+The aim of this project is to study factors contributing to the survival of cancer patients in the US.
+To that end, we used Kaplan-Meier estimation and Cox proportional hazards regression to analyze all brain tumor cases in the surveillance, epidemiology, and end results ([SEER](https://seer.cancer.gov/)) database from 2000–2020.
+Data cleaning and pre-processing and the train-test split were performed using [scikit-learn](https://scikit-learn.org/stable/), while the [lifelines](https://lifelines.readthedocs.io/en/stable/) library was used to fit the survival models.
 
-## Proposed tools
+## Results
 
-Multivariable logistic regression and Cox regression.
+[Here](reports/slides.pdf) are some slides describing the project.
+Finally, here are some examples of predicted survival functions adjusted for year of diagnosis using the Kaplan-Meier estimator and Cox regression, respectively:
 
-## Data source
-
-Surveillance, Epidemiology, and End Results (SEER) database.
+<p align="middle">
+  <img src="https://github.com/dcerkoney/spring-2024-cancer-survival-known-success/assets/11780326/dc0b8baa-c8c5-439c-a213-5aab5e291bd3" width="405" /> 
+  <img src="https://github.com/dcerkoney/spring-2024-cancer-survival-known-success/assets/11780326/7f8a0975-a747-4c8d-b8f5-76e487b3a768" width="405" />
+</p>
